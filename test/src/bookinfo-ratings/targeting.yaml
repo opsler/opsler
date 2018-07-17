@@ -1,0 +1,14 @@
+apiVersion: opsler.com/v1alpha1
+kind: Targeting
+metadata:
+  name: test-user-json
+spec:
+  ingress: bookinfo
+  priority: 2
+  segment:
+  - http:
+    - match:
+      - headers:
+          cookie:
+            regex: "^(.*?;)?(user=jason)(;.*)?$"
+  virtualEnvironment: bookinfo-ratings

@@ -1,0 +1,33 @@
+apiVersion: opsler.com/v1alpha1
+kind: VirtualEnvironment
+metadata:
+  name: bookinfo-ratings
+spec:
+  http:
+  - match:
+    - uri:
+        exact: /productpage
+    - uri:
+        exact: /login
+    - uri:
+        exact: /logout
+    - uri:
+        prefix: /api/v1/products
+    route:
+    - destination:
+        host: productpage
+        port:
+          number: 9080
+  services:
+  - host: productpage
+    labels:
+      version: v1
+  - host: reviews
+    labels:
+      version: v2
+  - host: ratings
+    labels:
+      version: v1
+  - host: details
+    labels:
+      version: v1

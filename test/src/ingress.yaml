@@ -1,0 +1,13 @@
+apiVersion: opsler.com/v1alpha1
+kind: Ingress
+metadata:
+  name: bookinfo
+spec:
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+  defaultVirtualEnvironment: bookinfo
