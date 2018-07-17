@@ -1,0 +1,3 @@
+apiVersion: opsler.com/v1alpha1
+kind: Opsler
+projectName: opsler-operator
