@@ -3,12 +3,11 @@ kind: Targeting
 metadata:
   name: test-user-json
 spec:
-  ingress: bookinfo
+  entrypoint: bookinfo
   priority: 2
   segment:
-  - http:
-    - match:
-      - headers:
-          cookie:
-            regex: "^(.*?;)?(user=jason)(;.*)?$"
+  - httpMatch:
+    - headers:
+      cookie:
+        regex: "^(.*?;)?(user=jason)(;.*)?$"
   virtualEnvironment: bookinfo-ratings

@@ -47,7 +47,7 @@ func Reconcile() (err error) {
 	}
 
 	combine(virtualEnvironmentList, targetingList, entrypointList)
-	istio
+	//sdk.Create()
 
 	return nil
 }
@@ -55,13 +55,13 @@ func Reconcile() (err error) {
 func combine(virtualEnvironmentList api.VirtualEnvironmentList, targetingList api.TargetingList, entrypointList api.EntrypointList) []EntrypointFlow {
 	entrypointFlows := make([]EntrypointFlow, 0)
 	for _, entrypoint := range entrypointList.Items {
-		defaultVirtualEnvironment := findVirtualEnvironment(entrypoint.Spec.DefaultVirtualEnvironment, virtualEnvironmentList.Items)
-		if defaultVirtualEnvironment != nil {
+		defaultVirtualEnvironment, ok := findVirtualEnvironment(entrypoint.Spec.DefaultVirtualEnvironment, virtualEnvironmentList.Items)
+		if ok {
 			targetings := getAllTargetingsByEntrypoint(entrypoint.ObjectMeta.Name, targetingList.Items)
 			entrypointFlows = append(entrypointFlows, EntrypointFlow{
 				Entrypoint:                entrypoint,
 				DefaultVirtualEnvironment: defaultVirtualEnvironment,
-				Targetings:                combineTargetingToVirtualEnvironments(targetings, virtualEnvironments.Items)})
+				Targetings:                combineTargetingToVirtualEnvironments(targetings, virtualEnvironmentList.Items)})
 		} else {
 			// TODO: Notify that we are waiting for virtual env to be created
 		}
@@ -72,14 +72,14 @@ func combine(virtualEnvironmentList api.VirtualEnvironmentList, targetingList ap
 func combineTargetingToVirtualEnvironments(targetings []api.Targeting, virtualEnvironments []api.VirtualEnvironment) []TargetingFlow {
 	targetingFlows := make([]TargetingFlow, 0)
 	for _, targeting := range targetings {
-		virtualEnvironment := findVirtualEnvironment(targeting.Spec.VirtualEnvironment, virtualEnvironments)
-		if virtualEnvironment != nil {
+		virtualEnvironment, ok := findVirtualEnvironment(targeting.Spec.VirtualEnvironment, virtualEnvironments)
+		if ok {
 			targetingFlows = append(targetingFlows, TargetingFlow{
 				Targeting:          targeting,
 				VirtualEnvironment: virtualEnvironment})
 		}
 	}
-	return targetingsOfEntrypoint
+	return targetingFlows
 }
 
 func getAllTargetingsByEntrypoint(entrypointName string, targetings []api.Targeting) []api.Targeting {
@@ -92,13 +92,13 @@ func getAllTargetingsByEntrypoint(entrypointName string, targetings []api.Target
 	return targetingsOfEntrypoint
 }
 
-func findVirtualEnvironment(name string, virtualEnvironments []api.VirtualEnvironment) api.VirtualEnvironment {
+func findVirtualEnvironment(name string, virtualEnvironments []api.VirtualEnvironment) (api.VirtualEnvironment, bool) {
 	for _, virtualEnvironment := range virtualEnvironments {
 		if virtualEnvironment.ObjectMeta.Name == name {
-			return virtualEnvironment
+			return virtualEnvironment, true
 		}
 	}
-	return nil
+	return api.VirtualEnvironment{}, false
 }
 
 type TargetingFlow struct {

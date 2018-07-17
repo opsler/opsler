@@ -6,8 +6,7 @@ spec:
   ingress: bookinfo
   priority: 3
   segment:
-  - http:
-    - match:
+  - httpMatch:
       - headers:
           cookie:
             regex: "^(.*?;)?(user=joey)(;.*)?$"
