@@ -68,7 +68,8 @@
   name = "github.com/gogo/protobuf"
   packages = [
     "proto",
-    "sortkeys"
+    "sortkeys",
+    "types"
   ]
   revision = "7d68e886eac4f7e34d0d82241a6273d6c304c5cf"
   version = "v1.1.0"
@@ -142,6 +143,12 @@
   packages = ["."]
   revision = "9316a62528ac99aaecb4e47eadd6dc8aa6533d58"
   version = "v0.3.5"
+
+[[projects]]
+  name = "github.com/istio/api"
+  packages = ["networking/v1alpha3"]
+  revision = "8d67e57e3612dae1a3423795bce93a372cfe4fa4"
+  version = "0.8.0"
 
 [[projects]]
   name = "github.com/json-iterator/go"
@@ -514,6 +521,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ecd2e1d13a38e943f4705a5b804ae00256c7f741f0eb49211cc498d71278059c"
+  inputs-digest = "17a22590a0418aa3c0590f4f390e9944f3c7c8d7f1765e9c529673fbbebfb94c"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -16,6 +16,7 @@ type Handler struct {
 }
 
 func (h *Handler) Handle(ctx context.Context, event sdk.Event) error {
+
 	// switch o := event.Object.(type) {
 	// case *v1alpha1.Opsler:
 	// 	err := sdk.Create(newbusyBoxPod(o))
