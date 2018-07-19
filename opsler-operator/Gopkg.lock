@@ -68,8 +68,7 @@
   name = "github.com/gogo/protobuf"
   packages = [
     "proto",
-    "sortkeys",
-    "types"
+    "sortkeys"
   ]
   revision = "7d68e886eac4f7e34d0d82241a6273d6c304c5cf"
   version = "v1.1.0"
@@ -145,12 +144,6 @@
   version = "v0.3.5"
 
 [[projects]]
-  name = "github.com/istio/api"
-  packages = ["networking/v1alpha3"]
-  revision = "8d67e57e3612dae1a3423795bce93a372cfe4fa4"
-  version = "0.8.0"
-
-[[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "ab8a2e0c74be9d3be70b3184d9acc634935ded82"
@@ -170,7 +163,7 @@
     "jlexer",
     "jwriter"
   ]
-  revision = "d1b659f03ef58c49f92b885b227c6e22ba4b617b"
+  revision = "efc7eb8984d6655c26b5c9d2e65c024e5767c37c"
 
 [[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
@@ -318,7 +311,7 @@
     "imports",
     "internal/fastwalk"
   ]
-  revision = "fd2d2c45eb2dff7b87eab4303a1016b4dbf95e81"
+  revision = "d74aaa1f57016ff7631311e553c625b952ce5853"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
@@ -521,6 +514,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "17a22590a0418aa3c0590f4f390e9944f3c7c8d7f1765e9c529673fbbebfb94c"
+  inputs-digest = "57b21a8231ad0dd8323b4015a93f0f72877104b2a10db7b598957a65fe3292b5"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -3,31 +3,36 @@ package opsler
 import (
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	api "github.com/opsler/opsler/opsler-operator/pkg/apis/opsler/v1alpha1"
+	"github.com/opsler/opsler/opsler-operator/pkg/istio"
+	"github.com/opsler/opsler/opsler-operator/pkg/models"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Reconcile() (err error) {
 	listOptions := sdk.WithListOptions(&metav1.ListOptions{
-		IncludeUninitialized: false,
+		IncludeUninitialized: true,
 	})
 	namespace := "default"
 
 	entrypointList := api.EntrypointList{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Entrypoint",
-			APIVersion: "v1alpha1",
+			APIVersion: "opsler.com/v1alpha1",
 		},
 	}
+
 	if err := sdk.List(namespace, &entrypointList, listOptions); err != nil {
 		logrus.Errorf("Query failed: %v", err)
 		return err
 	}
 
+	logrus.Infof("Received entrypoints: %+v", entrypointList)
+
 	virtualEnvironmentList := api.VirtualEnvironmentList{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VirtualEnvironment",
-			APIVersion: "v1alpha1",
+			APIVersion: "opsler.com/v1alpha1",
 		},
 	}
 	if err := sdk.List(namespace, &virtualEnvironmentList, listOptions); err != nil {
@@ -35,30 +40,35 @@ func Reconcile() (err error) {
 		return err
 	}
 
+	logrus.Infof("Received virtualEnvironments: %+v", virtualEnvironmentList)
+
 	targetingList := api.TargetingList{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Targeting",
-			APIVersion: "v1alpha1",
+			APIVersion: "opsler.com/v1alpha1",
 		},
 	}
 	if err := sdk.List(namespace, &targetingList, listOptions); err != nil {
-		logrus.Errorf("Query failed: %v", err)
+		logrus.Errorf("Query failed: %+v", err)
 		return err
 	}
 
-	combine(virtualEnvironmentList, targetingList, entrypointList)
+	logrus.Infof("Received targetings: %v", targetingList)
+
+	entrypointFlows := combine(virtualEnvironmentList, targetingList, entrypointList)
+	istio.Apply(entrypointFlows, namespace)
 	//sdk.Create()
 
 	return nil
 }
 
-func combine(virtualEnvironmentList api.VirtualEnvironmentList, targetingList api.TargetingList, entrypointList api.EntrypointList) []EntrypointFlow {
-	entrypointFlows := make([]EntrypointFlow, 0)
+func combine(virtualEnvironmentList api.VirtualEnvironmentList, targetingList api.TargetingList, entrypointList api.EntrypointList) []models.EntrypointFlow {
+	entrypointFlows := make([]models.EntrypointFlow, 0)
 	for _, entrypoint := range entrypointList.Items {
 		defaultVirtualEnvironment, ok := findVirtualEnvironment(entrypoint.Spec.DefaultVirtualEnvironment, virtualEnvironmentList.Items)
 		if ok {
 			targetings := getAllTargetingsByEntrypoint(entrypoint.ObjectMeta.Name, targetingList.Items)
-			entrypointFlows = append(entrypointFlows, EntrypointFlow{
+			entrypointFlows = append(entrypointFlows, models.EntrypointFlow{
 				Entrypoint:                entrypoint,
 				DefaultVirtualEnvironment: defaultVirtualEnvironment,
 				Targetings:                combineTargetingToVirtualEnvironments(targetings, virtualEnvironmentList.Items)})
@@ -69,12 +79,12 @@ func combine(virtualEnvironmentList api.VirtualEnvironmentList, targetingList ap
 	return entrypointFlows
 }
 
-func combineTargetingToVirtualEnvironments(targetings []api.Targeting, virtualEnvironments []api.VirtualEnvironment) []TargetingFlow {
-	targetingFlows := make([]TargetingFlow, 0)
+func combineTargetingToVirtualEnvironments(targetings []api.Targeting, virtualEnvironments []api.VirtualEnvironment) []models.TargetingFlow {
+	targetingFlows := make([]models.TargetingFlow, 0)
 	for _, targeting := range targetings {
 		virtualEnvironment, ok := findVirtualEnvironment(targeting.Spec.VirtualEnvironment, virtualEnvironments)
 		if ok {
-			targetingFlows = append(targetingFlows, TargetingFlow{
+			targetingFlows = append(targetingFlows, models.TargetingFlow{
 				Targeting:          targeting,
 				VirtualEnvironment: virtualEnvironment})
 		}
@@ -99,15 +109,4 @@ func findVirtualEnvironment(name string, virtualEnvironments []api.VirtualEnviro
 		}
 	}
 	return api.VirtualEnvironment{}, false
-}
-
-type TargetingFlow struct {
-	Targeting          api.Targeting
-	VirtualEnvironment api.VirtualEnvironment
-}
-
-type EntrypointFlow struct {
-	Entrypoint                api.Entrypoint
-	DefaultVirtualEnvironment api.VirtualEnvironment
-	Targetings                []TargetingFlow
 }

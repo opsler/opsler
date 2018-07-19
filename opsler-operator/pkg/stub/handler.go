@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
+	"github.com/opsler/opsler/opsler-operator/pkg/opsler"
 	"github.com/sirupsen/logrus"
 )
 
@@ -25,7 +26,8 @@ func (h *Handler) Handle(ctx context.Context, event sdk.Event) error {
 	// 		return err
 	// 	}
 	// }
-	logrus.Info("handle")
+	opsler.Reconcile()
+	logrus.Info("Handler called")
 	return nil
 }
 

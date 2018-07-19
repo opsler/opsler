@@ -1,4 +1,4 @@
-apiVersion: "opsler.com/v1alpha1"
-kind: "Opsler"
-metadata:
-  name: "example"
+#apiVersion: "opsler.com/v1alpha1"
+#kind: "Opsler"
+#metadata:
+#  name: "example"

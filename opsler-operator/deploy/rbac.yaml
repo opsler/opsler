@@ -30,6 +30,12 @@ rules:
   - statefulsets
   verbs:
   - "*"
+- apiGroups:
+  - networking.istio.io
+  resources:
+  - "*"
+  verbs:
+  - "*"
 
 ---
 
